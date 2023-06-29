@@ -1,0 +1,195 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "fa627935-35e3-4022-ba2c-dfa866ae25dc",
+            "version": "KqlParameterItem/1.0",
+            "name": "DefaultSubscription_Internal",
+            "type": 1,
+            "isRequired": true,
+            "query": "where type =~ 'microsoft.operationalinsights/workspaces'\r\n| take 1\r\n| project subscriptionId",
+            "crossComponentResources": [
+              "value::selected"
+            ],
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "b403276f-7d7c-4941-b532-df0f1be732bb",
+            "version": "KqlParameterItem/1.0",
+            "name": "Subscription",
+            "type": 6,
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "includeAll": true
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "value": "/subscriptions/f058f18b-e29b-47c4-ac91-e31e67998f58"
+          },
+          {
+            "id": "5c572b22-4f9a-4bb4-b37b-38cd630991c2",
+            "version": "KqlParameterItem/1.0",
+            "name": "Workspace",
+            "type": 5,
+            "query": "resources\r\n| where type =~ 'microsoft.operationalinsights/workspaces'\r\n| project id",
+            "crossComponentResources": [
+              "{Subscription}"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+            
+          },
+          {
+            "id": "dc8503a5-0c94-411d-8801-f1a5e7c5d53c",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "type": 4,
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 14400000
+                },
+                {
+                  "durationMs": 43200000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 172800000
+                },
+                {
+                  "durationMs": 259200000
+                },
+                {
+                  "durationMs": 604800000
+                },
+                {
+                  "durationMs": 1209600000
+                },
+                {
+                  "durationMs": 2419200000
+                },
+                {
+                  "durationMs": 2592000000
+                },
+                {
+                  "durationMs": 5184000000
+                }
+              ]
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "value": {
+              "durationMs": 259200000
+            }
+          }
+        ],
+        "style": "above",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "parameters - 2"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "DeviceEvents\r\n| where ActionType == \"UsbDriveMounted\"\r\n| extend DriveLetter = tostring(todynamic(AdditionalFields).DriveLetter)\r\n| join kind=inner (DeviceFileEvents\r\n    | extend FileCopyTime = TimeGenerated\r\n    | where ActionType == \"FileCreated\"\r\n        | parse FolderPath with DriveLetter '\\\\' *\r\n       | extend DriveLetter = tostring(DriveLetter)\r\n    )\r\n    on DeviceId, DriveLetter\r\n    | project TimeGenerated, DriveLetter, DeviceName, InitiatingProcessAccountUpn, FileName1, FolderPath1, InitiatingProcessCommandLine1\r\n",
+        "size": 0,
+        "title": "Removeable Media By User",
+        "timeContextFromParameter": "TimeRange",
+        "exportFieldName": "TargetUserName",
+        "exportParameterName": "TargetUserNameUSB",
+        "showExportToExcel": true,
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "{Workspace}"
+        ],
+        "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "JobTitle",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "EmployeeId",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "Country",
+              "formatter": 5
+            }
+          ],
+          "rowLimit": 2000,
+          "filter": true
+        }
+      },
+      "name": "query - 1"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "DeviceEvents\r\n| where ActionType == \"UsbDriveMounted\"\r\n| extend DriveLetter = tostring(todynamic(AdditionalFields).DriveLetter)\r\n| join kind=inner (DeviceFileEvents\r\n    | extend FileCopyTime = TimeGenerated\r\n    | where ActionType == \"FileCreated\"\r\n        | parse FolderPath with DriveLetter '\\\\' *\r\n       | extend DriveLetter = tostring(DriveLetter)\r\n    )\r\n    on DeviceId, DriveLetter\r\n    | project TimeGenerated, DriveLetter, DeviceName, InitiatingProcessAccountUpn, FileName1, FolderPath1, InitiatingProcessCommandLine1\r\n",
+        "size": 0,
+        "showAnalytics": true,
+        "title": "Removable Media events details unfiltered",
+        "timeContextFromParameter": "TimeRange",
+        "showExportToExcel": true,
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "{Workspace}"
+        ],
+        "gridSettings": {
+          "rowLimit": 3000,
+          "filter": true
+        }
+      },
+      "name": "query - 2"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "DeviceEvents\r\n| where ActionType == \"UsbDriveMounted\"\r\n| extend DriveLetter = tostring(todynamic(AdditionalFields).DriveLetter)\r\n| join kind=inner (DeviceFileEvents\r\n    | extend FileCopyTime = TimeGenerated\r\n    | where ActionType == \"FileCreated\"\r\n        | parse FolderPath with DriveLetter '\\\\' *\r\n       | extend DriveLetter = tostring(DriveLetter)\r\n    )\r\n    on DeviceId, DriveLetter\r\n    | project TimeGenerated, DriveLetter, DeviceName, InitiatingProcessAccountUpn, FileName1, FolderPath1, InitiatingProcessCommandLine1\r\n | summarize Count=count() by DeviceName, InitiatingProcessAccountUpn   \r\n| sort by Count desc\r\n",
+        "size": 0,
+        "showAnalytics": true,
+        "timeContextFromParameter": "TimeRange",
+        "showExportToExcel": true,
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "{Workspace}"
+        ]
+      },
+      "name": "query - 3"
+    }
+  ],
+
+  "fromTemplateId": "sentinel-UserWorkbook",
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
